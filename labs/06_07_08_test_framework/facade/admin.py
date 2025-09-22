@@ -1,13 +1,14 @@
 from models.api.admin import AdminAPI
 from models.ui.admin import AdminPage
+import os
 
 class AdminFacade:
-    def __init__(self, page, base_url="http://localhost:8000", frontend_url="http://localhost:5173/"):
+    def __init__(self, page):
         self.page = page
         self.admin_page = AdminPage(page)
-        self.base_url = base_url
-        self.frontend_url = frontend_url
-        self.api = AdminAPI(base_url=base_url)
+        self.base_url = os.getenv("APP_BACK_URL", "http://localhost:8000")
+        self.frontend_url = os.getenv("APP_FRONT_URL", "http://localhost:5173/")
+        self.api = AdminAPI(base_url=self.base_url)
 
     
     def login_via_token(self):
