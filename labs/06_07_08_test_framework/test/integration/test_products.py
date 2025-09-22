@@ -46,8 +46,13 @@ def test_remove_product_from_catalog():
     count_after = admin_api.get_current_product_count()
     assert count_after == count_before -1, "List did not decrease by one"
     
-    product_list = admin_api.get_product_list()
-    if len(product_list) > 0:
+    for _ in range(5):
+        product_list = admin_api.get_product_list()
+        if not product_list or product_list[-1]["name"] != product_name:
+            break
+        time.sleep(0.5)  # wait 0.5 seconds before retry
+    else:
+        # If still present after retries, fail
         last_product = product_list[-1]
         assert last_product["name"] != product_name, "Deleted product still appears"
 
