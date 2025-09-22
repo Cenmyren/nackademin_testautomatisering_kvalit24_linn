@@ -3,26 +3,27 @@ from models.ui.user import UserPage
 from facade.users import UsersFacade
 import time
 
+TIMEOUT = 30000  # 30 seconds for CI
+
+def take_debug_screenshot(page: Page, name: str):
+    ts = int(time.time())
+    page.screenshot(path=f"/tmp/{name}_{ts}.png")
+    with open(f"/tmp/{name}_{ts}.html", "w") as f:
+        f.write(page.content())
+
 def test_signup(page: Page):
     users_facade = UsersFacade(page)
     user_page = UserPage(page)
 
     try:
-        # GIVEN I AM A NEW POTENTIAL CUSTOMER
         username, password = users_facade.login_as_new_user()
 
-        # Wait for the welcome message with generous timeout
-        page.wait_for_selector(f"text=Welcome, {username}!", timeout=15000)
-        expect(user_page.get_welcome_message(username)).to_be_visible(timeout=15000)
+        # Wait for welcome message
+        expect(user_page.get_welcome_message(username)).to_be_visible(timeout=TIMEOUT)
 
-    except Exception as e:
-        # Capture screenshot & page content on failure
-        timestamp = int(time.time())
-        page.screenshot(path=f"/tmp/failure_signup_{timestamp}.png")
-        with open(f"/tmp/failure_signup_{timestamp}.html", "w") as f:
-            f.write(page.content())
-        raise e
-
+    except Exception:
+        take_debug_screenshot(page, "failure_signup")
+        raise
 
 def test_login(page: Page):
     username = "user_1"
@@ -32,20 +33,14 @@ def test_login(page: Page):
     user_page = UserPage(page)
 
     try:
-        # WHEN I LOG INTO THE APPLICATION
         users_facade.login_via_token(username, password)
 
-        # Wait for "Your Products" heading to appear
-        page.wait_for_selector("role=heading[name='Your Products:']", timeout=15000)
-        expect(user_page.user_headline_products).to_be_visible(timeout=15000)
+        # Wait for "Your Products" heading
+        expect(user_page.user_headline_products).to_be_visible(timeout=TIMEOUT)
 
-    except Exception as e:
-        # Capture screenshot & page content on failure
-        timestamp = int(time.time())
-        page.screenshot(path=f"/tmp/failure_login_{timestamp}.png")
-        with open(f"/tmp/failure_login_{timestamp}.html", "w") as f:
-            f.write(page.content())
-        raise e
+    except Exception:
+        take_debug_screenshot(page, "failure_login")
+        raise
 
 
 # from playwright.sync_api import Page, expect
