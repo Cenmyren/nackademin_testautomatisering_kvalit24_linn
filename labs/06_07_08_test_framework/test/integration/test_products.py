@@ -48,6 +48,10 @@ def test_remove_product_from_catalog():
     
     product_list = admin_api.get_product_list()
     names = [p["name"] for p in product_list]
+
+    # Felsökning
+    print("Current products in backend:", names)
+
     assert product_name not in names, f"Deleted product {product_name} still appears"
 
 
