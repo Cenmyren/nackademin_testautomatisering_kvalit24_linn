@@ -27,7 +27,7 @@ class AdminFacade:
         time.sleep(1)
 
         print("Page URL after goto:", self.page.url)
-
+        print("HTML content head snippet:", self.page.inner_html("head"))
         print(self.page.evaluate("() => Object.assign({}, window.localStorage)"))
 
         # 4. Verify token is actually in localStorage
