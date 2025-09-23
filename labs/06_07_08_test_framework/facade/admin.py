@@ -24,6 +24,12 @@ class AdminFacade:
         # 3. Go to frontend and wait until network idle
         self.page.goto(self.frontend_url, wait_until="networkidle")
 
+        time.sleep(1)
+
+        print("Page URL after goto:", self.page.url)
+
+        print(self.page.evaluate("() => Object.assign({}, window.localStorage)"))
+
         # 4. Verify token is actually in localStorage
         browser_token = self.page.evaluate("() => window.localStorage.getItem('token')")
         assert browser_token == self.api.token, f"Token mismatch! Browser: {browser_token}"
