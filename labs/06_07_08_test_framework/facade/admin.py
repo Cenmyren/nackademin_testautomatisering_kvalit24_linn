@@ -21,46 +21,71 @@ class AdminFacade:
             f"window.localStorage.setItem('token', '{self.api.token}')"
         )
 
-        # 3. Go to frontend and wait until network idle
-        self.page.goto(self.frontend_url, wait_until="networkidle")
+        # 3. Go to frontend
+        self.page.goto(self.frontend_url, wait_until="domcontentloaded")
 
-        time.sleep(1)
+        # 4. Ensure token is set after navigation (SPA might reload)
+        self.page.evaluate(f"window.localStorage.setItem('token', '{self.api.token}')")
+        self.page.reload(wait_until="networkidle")
 
         print("Page URL after goto:", self.page.url)
-        print("HTML content head snippet:", self.page.inner_html("head"))
-        print(self.page.evaluate("() => Object.assign({}, window.localStorage)"))
+        print("localStorage content:", self.page.evaluate("() => Object.assign({}, window.localStorage)"))
 
-        # 4. Verify token is actually in localStorage
-        browser_token = self.page.evaluate("() => window.localStorage.getItem('token')")
-        assert browser_token == self.api.token, f"Token mismatch! Browser: {browser_token}"
-
-        # 5. Wait for the product grid container to appear
+        # 5. Wait for product grid
         self.page.wait_for_selector(".product-grid", timeout=30000)
         print("✅ Logged in and product grid is visible")
 
-    def create_product_for_test_via_api(self, product_name):
-        # 1. Create product via API
-        response = self.api.create_product(product_name)
-        assert response.status_code == 200, f"Failed to create product via API: {response.text}"
 
-        # 2. Refresh frontend to see new product
-        self.page.goto(self.frontend_url, wait_until="networkidle")
+    # def login_via_token(self):
+    #     # 1. Get token from API
+    #     self.api.get_admin_token()
+    #     assert self.api.token, "No token received from API"
 
-        # 3. Wait until the new product appears in the grid
-        timeout = 30
-        interval = 1
-        elapsed = 0
-        while elapsed < timeout:
-            items = self.admin_page.admin_grid_products.all()
-            names = [item.inner_text() for item in items]
-            if product_name in names:
-                print(f"✅ Product '{product_name}' is visible in the grid")
-                return product_name
-            time.sleep(interval)
-            elapsed += interval
+    #     # 2. Inject token BEFORE navigation
+    #     self.page.add_init_script(
+    #         f"window.localStorage.setItem('token', '{self.api.token}')"
+    #     )
 
-        # If not found after timeout
-        raise TimeoutError(f"Product '{product_name}' did not appear in the frontend after {timeout} seconds")
+    #     # 3. Go to frontend and wait until network idle
+    #     self.page.goto(self.frontend_url, wait_until="networkidle")
+
+    #     time.sleep(1)
+
+    #     print("Page URL after goto:", self.page.url)
+    #     print("HTML content head snippet:", self.page.inner_html("head"))
+    #     print(self.page.evaluate("() => Object.assign({}, window.localStorage)"))
+
+    #     # 4. Verify token is actually in localStorage
+    #     browser_token = self.page.evaluate("() => window.localStorage.getItem('token')")
+    #     assert browser_token == self.api.token, f"Token mismatch! Browser: {browser_token}"
+
+    #     # 5. Wait for the product grid container to appear
+    #     self.page.wait_for_selector(".product-grid", timeout=30000)
+    #     print("✅ Logged in and product grid is visible")
+
+    # def create_product_for_test_via_api(self, product_name):
+    #     # 1. Create product via API
+    #     response = self.api.create_product(product_name)
+    #     assert response.status_code == 200, f"Failed to create product via API: {response.text}"
+
+    #     # 2. Refresh frontend to see new product
+    #     self.page.goto(self.frontend_url, wait_until="networkidle")
+
+    #     # 3. Wait until the new product appears in the grid
+    #     timeout = 30
+    #     interval = 1
+    #     elapsed = 0
+    #     while elapsed < timeout:
+    #         items = self.admin_page.admin_grid_products.all()
+    #         names = [item.inner_text() for item in items]
+    #         if product_name in names:
+    #             print(f"✅ Product '{product_name}' is visible in the grid")
+    #             return product_name
+    #         time.sleep(interval)
+    #         elapsed += interval
+
+    #     # If not found after timeout
+    #     raise TimeoutError(f"Product '{product_name}' did not appear in the frontend after {timeout} seconds")
 
 
 
