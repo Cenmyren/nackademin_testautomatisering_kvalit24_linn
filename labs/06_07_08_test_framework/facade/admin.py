@@ -3,7 +3,8 @@ from models.ui.admin import AdminPage
 import os
 
 class AdminFacade:
-    def __init__(self, page):
+    def __init__(self, page, context):
+        self.context = context
         self.page = page
         self.admin_page = AdminPage(page)
         self.base_url = os.getenv("APP_BACK_URL", "http://localhost:8000")

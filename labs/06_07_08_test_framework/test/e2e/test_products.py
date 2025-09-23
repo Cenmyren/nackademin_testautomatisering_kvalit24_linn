@@ -3,11 +3,11 @@ from facade.admin import AdminFacade
 from models.ui.admin import AdminPage
 import time
 
-def test_add_product_to_catalog(page: Page):
+def test_add_product_to_catalog(page: Page, context):
 
     # GIVEN I AM AN ADMIN USER
     admin_page = AdminPage(page)
-    admin_facade = AdminFacade(page)
+    admin_facade = AdminFacade(page, context)
 
     admin_facade.login_via_token()
 
