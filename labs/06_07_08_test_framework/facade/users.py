@@ -17,6 +17,15 @@ class UsersFacade:
         username = generate_string_with_prefix("user")
         password = "password123"
 
+        # Detect environment: local vs Jenkins
+        backend_host = "app-backend" if os.getenv("CI") else "localhost"
+
+        # Add reroute so frontend API calls go to the right backend
+        self.page.route("http://localhost:8000/*",
+            lambda route: route.continue_(
+                url=route.request.url.replace("localhost", backend_host)
+            ))
+
         # Navigate explicitly to frontend
         self.page.goto(self.frontend_url, wait_until="networkidle")
 
