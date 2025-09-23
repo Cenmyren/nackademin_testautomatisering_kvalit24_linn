@@ -11,25 +11,20 @@ class AdminFacade:
         self.api = AdminAPI(base_url=self.base_url)
 
     def login_via_token(self):
-        self.api.get_admin_token() # call api-model
+        # Get token from API
+        self.api.get_admin_token()
 
-        # Clear localStorage and set token before page loads
-        self.page.add_init_script("""
-        window.localStorage.clear();
-        window.localStorage.setItem('token', '%s');
-        """ % self.api.token)
+        # Set token in localStorage before page loads
+        self.page = self.context.new_page()
+        self.context.add_init_script(f"window.localStorage.setItem('token', '{self.api.token}');")
 
-        self.page.goto(self.frontend_url) # load frontend
+        # Navigate to frontend
+        self.page.goto(self.frontend_url)
 
-        # error check, can remove later
-        response = self.page.evaluate("""async () => {
-            const res = await fetch('/products', {
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
-            });
-            return res.status;
-        }""")
-        print("Products fetch status:", response)
+        # Reinitialize AdminPage with the new page
+        self.admin_page = AdminPage(self.page)
 
+        # Wait for admin page to render
         self.page.locator(".product-grid, .some-admin-header").wait_for(state="visible", timeout=15000)
 
 
