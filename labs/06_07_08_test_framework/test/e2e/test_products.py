@@ -38,6 +38,7 @@ def test_remove_product_from_catalog(page: Page):
     new_product_name = f"deleted_product_{int(time.time())}"
     new_product = admin_facade.create_product_for_test_via_api(new_product_name)
     admin_page.reload()
+    admin_page.page.locator(".product-item", has_text=new_product_name).wait_for(state="visible")
     count_before_removing = admin_page.get_current_product_count()
 
     # Delete product

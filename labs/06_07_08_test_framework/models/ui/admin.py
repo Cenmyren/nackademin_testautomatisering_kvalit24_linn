@@ -17,6 +17,7 @@ class AdminPage:
     def delete_product_by_name(self, product_name):
         # Locate the product
         product_locator = self.page.locator(".product-item", has_text=product_name)
+        product_locator.wait_for(state="visible")
 
         # Click the Delete button inside the product
         product_locator.get_by_role("button", name="Delete").click()
