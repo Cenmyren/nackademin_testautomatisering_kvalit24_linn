@@ -11,41 +11,41 @@ class AdminFacade:
         self.frontend_url = os.getenv("APP_FRONT_URL", "http://localhost:5173/")
         self.api = AdminAPI(base_url=self.base_url)
 
-def login_via_token(self):
-    # 1. Get token from API
-    self.api.get_admin_token()
-    assert self.api.token, "No token received from API"
+    def login_via_token(self):
+        # 1. Get token from API
+        self.api.get_admin_token()
+        assert self.api.token, "No token received from API"
 
-    # 2. Inject token BEFORE SPA scripts run
-    self.page.add_init_script(
-        f"window.localStorage.setItem('token', '{self.api.token}')"
-    )
+        # 2. Inject token BEFORE SPA scripts run
+        self.page.add_init_script(
+            f"window.localStorage.setItem('token', '{self.api.token}')"
+        )
 
-    # 3. Go to the frontend root (SPA entry)
-    self.page.goto(self.frontend_url, wait_until="networkidle")
+        # 3. Go to the frontend root (SPA entry)
+        self.page.goto(self.frontend_url, wait_until="networkidle")
 
-    # 4. Debug: show URL and localStorage
-    print("Page URL after goto:", self.page.url)
-    local_storage = self.page.evaluate("() => Object.assign({}, window.localStorage)")
-    print("localStorage content:", local_storage)
+        # 4. Debug: show URL and localStorage
+        print("Page URL after goto:", self.page.url)
+        local_storage = self.page.evaluate("() => Object.assign({}, window.localStorage)")
+        print("localStorage content:", local_storage)
 
-    # 5. Wait for the SPA to render the admin page
-    # Instead of assuming .product-grid appears immediately, poll the DOM
-    timeout = 30
-    interval = 1
-    elapsed = 0
-    while elapsed < timeout:
-        grids = self.page.query_selector_all(".product-grid")
-        if grids:
-            print("✅ Logged in and product grid is visible")
-            return
-        time.sleep(interval)
-        elapsed += interval
+        # 5. Wait for the SPA to render the admin page
+        # Instead of assuming .product-grid appears immediately, poll the DOM
+        timeout = 30
+        interval = 1
+        elapsed = 0
+        while elapsed < timeout:
+            grids = self.page.query_selector_all(".product-grid")
+            if grids:
+                print("✅ Logged in and product grid is visible")
+                return
+            time.sleep(interval)
+            elapsed += interval
 
-    # 6. If timeout, raise error with HTML snapshot
-    html = self.page.content()
-    print("⚠️ Product grid not found. Current HTML head snippet:\n", html[:500])
-    raise TimeoutError("Product grid did not appear within 30s")
+        # 6. If timeout, raise error with HTML snapshot
+        html = self.page.content()
+        print("⚠️ Product grid not found. Current HTML head snippet:\n", html[:500])
+        raise TimeoutError("Product grid did not appear within 30s")
 
 
     # def login_via_token(self):
