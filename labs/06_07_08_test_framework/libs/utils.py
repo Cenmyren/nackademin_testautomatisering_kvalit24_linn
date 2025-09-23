@@ -1,6 +1,7 @@
 import random
 import string
 
+# GENERATE USERNAME FOR SIGNUP
 def generate_string_with_prefix(prefix: str = "user", length: int = 8) -> str:
     """
     Generate a string with a configurable prefix and a random string.
