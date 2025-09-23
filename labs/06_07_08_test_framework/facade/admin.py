@@ -15,11 +15,11 @@ class AdminFacade:
         self.api.get_admin_token()
 
         # 2️⃣ Detect environment: local vs Jenkins
-        backend_host = "host.docker.internal" if os.getenv("CI") else "localhost"
+        backend_host = "app-backend" if os.getenv("CI") else "localhost"
 
         # 2️⃣ Intercept frontend API calls to localhost:8000
         #    and redirect them to your backend container
-        self.page.route("**/8000/*",
+        self.page.route("http://localhost:8000/*",
             lambda route: route.continue_(url=route.request.url.replace("localhost", backend_host))
         )
 
