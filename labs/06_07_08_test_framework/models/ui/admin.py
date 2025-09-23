@@ -20,7 +20,9 @@ class AdminPage:
         product_locator.wait_for(state="visible")
 
         # Click the Delete button inside the product
-        product_locator.get_by_role("button", name="Delete").click()
+        delete_button = product_locator.get_by_role("button", name="Delete")
+        delete_button.wait_for(state="visible")
+        delete_button.click()
 
         # Ensure the product is gone
         deleted_product = self.page.locator(".product-grid .product-item").filter(has_text=product_name)
