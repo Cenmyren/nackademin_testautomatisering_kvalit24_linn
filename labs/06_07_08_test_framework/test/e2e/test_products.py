@@ -25,11 +25,11 @@ def test_add_product_to_catalog(page: Page, context):
     expect(admin_page.admin_grid_products).to_have_count(count_before_adding + 1, timeout=10000)
 
 
-def test_remove_product_from_catalog(page: Page):
+def test_remove_product_from_catalog(page: Page, context):
 
     # GIVEN I AM AN ADMIN USER
     admin_page = AdminPage(page)
-    admin_facade = AdminFacade(page)
+    admin_facade = AdminFacade(page, context)
 
     admin_facade.login_via_token()
 
