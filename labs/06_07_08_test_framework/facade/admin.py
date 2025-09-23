@@ -25,9 +25,6 @@ class AdminFacade:
         # Reinitialize AdminPage with the new page
         self.admin_page = AdminPage(self.page)
 
-        # Wait for admin page to render
-        self.page.locator(".product-grid, .some-admin-header").wait_for(state="visible", timeout=15000)
-
 
     def create_product_for_test_via_api(self, product_name):
         response = self.api.create_product(product_name)
