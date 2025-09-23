@@ -43,5 +43,5 @@ def test_remove_product_from_catalog(page: Page):
     deleted_product = admin_page.delete_product_by_name(new_product)
 
     # THEN THE PRODUCT SHOULD NOT BE LISTED IN THE APP TO BE USED
-    expect(deleted_product).to_have_count(0) # Check that product with that name does not exist anymore
+    expect(deleted_product).to_have_count(0, timeout=10000) # Check that product with that name does not exist anymore
     expect(admin_page.admin_grid_products).to_have_count(count_before_removing - 1, timeout=10000)
