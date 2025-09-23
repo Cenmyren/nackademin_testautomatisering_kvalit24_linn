@@ -35,7 +35,7 @@ def test_remove_product_from_catalog(page: Page):
 
     # WHEN I REMOVE A PRODUCT FROM THE CATALOG
     #Add product via API
-    new_product_name = f"product_{int(time.time())}"
+    new_product_name = f"deleted_product_{int(time.time())}"
     new_product = admin_facade.create_product_for_test_via_api(new_product_name)
     count_before_removing = admin_page.get_current_product_count()
 
