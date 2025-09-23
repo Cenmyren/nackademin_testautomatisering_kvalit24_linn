@@ -10,7 +10,7 @@ class UsersFacade:
         self.signup_page = SignupPage(page)
         self.login_page = HomePage(page)
         self.base_url = os.getenv("APP_BACK_URL", "http://localhost:8000")
-        self.frontend_url = os.getenv("APP_FRONT_URL", "http://app-frontend:80")
+        self.frontend_url = os.getenv("APP_FRONT_URL", "http://localhost:5173/")
         self.user_api = UserAPI(self.base_url)
 
     def login_as_new_user(self):
@@ -32,10 +32,23 @@ class UsersFacade:
         self.user_api.login(username, password)
         token = self.user_api.token
 
+        # Detect environment: local vs Jenkins
+        backend_host = "app-backend" if os.getenv("CI") else "localhost"
+
+        # Intercept API calls and reroute if needed
+        self.page.route("http://localhost:8000/*",
+            lambda route: route.continue_(
+                url=route.request.url.replace("localhost", backend_host)
+            )
+        )
+
         # Set token in localStorage before page load
+        self.page.add_init_script("window.localStorage.clear()")
         self.page.add_init_script(f"""window.localStorage.setItem('token', '{token}')""")
         self.page.goto(self.frontend_url, wait_until="networkidle")
+        self.page.reload()
 
     def get_user_products_names(self):
         response = self.user_api.get_user_products()
         return [p["name"] for p in response.json()["products"]]
+    
