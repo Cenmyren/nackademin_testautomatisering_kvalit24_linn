@@ -12,8 +12,9 @@ class AdminFacade:
 
     def login_via_token(self):
         self.api.get_admin_token() # call api-model
+        self.page.add_init_script("window.localStorage.clear()")
         self.page.add_init_script(f""" window.localStorage.setItem('token', '{self.api.token}')""") # put token directly in local storage
-        self.page.goto(self.frontend_url) # load frontend
+        self.page.goto(self.frontend_url, wait_until="domcontentloaded") # load frontend
 
 
     def create_product_for_test_via_api(self, product_name):
