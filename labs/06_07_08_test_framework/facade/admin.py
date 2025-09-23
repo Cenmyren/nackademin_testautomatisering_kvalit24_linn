@@ -15,7 +15,7 @@ class AdminFacade:
         self.api.get_admin_token()
 
         # 2️⃣ Detect environment: local vs Jenkins
-        backend_host = "app-backend" if os.getenv("CI") else "localhost"
+        backend_host = "host.docker.internal" if os.getenv("CI") else "localhost"
 
         # 2️⃣ Intercept frontend API calls to localhost:8000
         #    and redirect them to your backend container
@@ -30,14 +30,11 @@ class AdminFacade:
         self.page.add_init_script(f"""window.localStorage.setItem('token', '{self.api.token}')""")
 
         # 5️⃣ Load frontend
-        self.page.goto(self.frontend_url)
-
-        # 6️⃣ Optional: reload to ensure JS picks up token
-        self.page.reload()
+        self.page.goto(self.frontend_url, wait_until="networkidle")
 
 
     def create_product_for_test_via_api(self, product_name):
         response = self.api.create_product(product_name)
         assert response.status_code == 200, "Failed to create product via API"
-        self.page.goto(self.frontend_url) # update page to see new product
+        self.page.reload(wait_until="networkidle") # update page to see new product
         return product_name
