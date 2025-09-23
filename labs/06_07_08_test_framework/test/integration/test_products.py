@@ -34,7 +34,7 @@ def test_remove_product_from_catalog():
 
     # WHEN I REMOVE A PRODUCT FROM THE CATALOGUE
     # Create product to delete
-    product_name = f"product_{int(time.time())}"
+    product_name = f"delete_product_{int(time.time())}"
     admin_api.create_product(product_name)
 
     # Delete product
