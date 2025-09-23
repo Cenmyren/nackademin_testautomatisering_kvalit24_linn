@@ -24,9 +24,12 @@ class AdminPage:
         delete_button.wait_for(state="visible")
         delete_button.click()
 
+        self.page.wait_for_timeout(500)
+
+        self.reload()
+
         # Ensure the product is gone
         deleted_product = self.page.locator(".product-grid .product-item").filter(has_text=product_name)
-        deleted_product.wait_for(state="detached")  # default timeout
 
         return deleted_product
     
