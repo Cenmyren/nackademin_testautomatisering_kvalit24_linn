@@ -32,3 +32,6 @@ class AdminPage:
         deleted_product.wait_for(state="detached", timeout=10000)  # waits until the element disappears
 
         return deleted_product
+    
+    def reload(self):
+        self.page.reload(wait_until="networkidle")
