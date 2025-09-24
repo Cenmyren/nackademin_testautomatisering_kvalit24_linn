@@ -25,11 +25,12 @@ class AdminFacade:
 
         for host in ["localhost", "host.docker.internal"]:
             self.page.route(
-            f"http://{host}:8000/*",
-            lambda route, host=host: route.continue_(
-                url=route.request.url.replace(host, backend_host)
+                f"http://{host}:8000/*",
+                lambda route, host=host: route.continue_(
+                    url=route.request.url.replace(host, backend_host)
+                )
             )
-        )
+
 
 
 
