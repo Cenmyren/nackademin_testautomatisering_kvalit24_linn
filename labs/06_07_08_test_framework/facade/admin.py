@@ -11,26 +11,24 @@ class AdminFacade:
         self.api = AdminAPI(base_url=self.base_url)
 
     def login_via_token(self):
-        # 1️⃣ Get admin token from API
         self.api.get_admin_token()
 
-        # # 2️⃣ Detect environment: local vs Jenkins
+        # Detect if the environment is local or via Jenkins
         backend_host = "app-backend" if os.getenv("CI") else "localhost"
 
-        # 2️⃣ Intercept frontend API calls to localhost:8000
-        #    and redirect them to your backend container
+        # Intercept frontend API calls to localhost:8000
+        # and redirect them to your backend container
         self.page.route("http://localhost:8000/*",
             lambda route: route.continue_(url=route.request.url.replace("localhost", backend_host))
         )
 
-
-        # 3️⃣ Clear local storage
+        # Clear local storage (just to be sure)
         self.page.add_init_script("window.localStorage.clear()")
 
-        # 4️⃣ Insert token directly into local storage
+        # Insert token directly into local storage
         self.page.add_init_script(f"""window.localStorage.setItem('token', '{self.api.token}')""")
 
-        # 5️⃣ Load frontend
+        # Load frontend
         self.page.goto(self.frontend_url, wait_until="networkidle")
 
 
