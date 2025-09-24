@@ -28,7 +28,6 @@ class AdminPage:
 
         self.reload()
 
-        # Ensure the product is gone
         deleted_product = self.page.locator(".product-grid .product-item").filter(has_text=product_name)
 
         return deleted_product

@@ -26,7 +26,7 @@ class UsersFacade:
                 url=route.request.url.replace("localhost", backend_host)
             ))
 
-        # Navigate explicitly to frontend
+        # Navigate to frontend
         self.page.goto(self.frontend_url, wait_until="networkidle")
 
         self.login_page.go_to_signup()
